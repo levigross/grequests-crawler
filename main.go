@@ -114,7 +114,9 @@ func eaters() {
 					return
 				}
 
-				crawlQueue <- myURL
+				go func(){
+					crawlQueue <- myURL
+				}()
 
 			})
 			myResp.Close()
@@ -139,10 +141,11 @@ func main() {
 	go status()
 
 	crawlQueue <- startingURL
+	go eaters()
 
 	for i := uint(0); i < *numThreads; i++ {
 		go spiders()
-		go eaters()
+
 	}
 	<-shutdownNotify
 	crawlWaitGroup.Wait()
